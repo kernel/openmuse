@@ -34,6 +34,28 @@ Keep `.env.local` private and out of git. On a host, put its values in the
 host's secret store. Render generates the three OpenMuse secrets itself;
 use the owner secret from Render's Environment tab to sign in.
 
+## Kernel browser access
+
+The topic worker attaches Kernel's hosted MCP server (`https://mcp.onkernel.com/mcp`)
+alongside its shell and filesystem tools, for pages plain `curl` cannot
+handle: JS-rendered sites, logins, or anything that blocks a bare HTTP
+request. This gives the worker Kernel's full tool surface (`manage_browsers`,
+`execute_playwright_code`, `browser_curl`, and more), not a narrowed subset.
+
+Set `KERNEL_API_KEY` as an OpenComputer project secret before deploying the
+agents:
+
+```sh
+printf %s "$KERNEL_API_KEY" | npx opencomputer secrets set KERNEL_API_KEY --value-stdin
+```
+
+Use a key scoped to a single Kernel project, not an org-wide key: the worker
+gets everything the key can reach, including browser and profile management,
+so scoping limits blast radius if the key ever leaks. A project-scoped key is
+shared by every topic's worker session (one OpenComputer project per
+installation), so topics are not isolated from each other's Kernel browsers
+or profiles the way they are isolated from each other's notes.
+
 ## The callback origin
 
 The coordinator calls `/api/agent/start-topic` to start or reuse a topic's

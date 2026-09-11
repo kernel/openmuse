@@ -7,7 +7,7 @@ outcome delivery. The README serves people; this file serves agents.
 ## Map
 
 - `opencomputer/agents/coordinator/` the coordinator: `agent.ts`, `tools/start-topic.ts`; deployed as `openmuse-dev`
-- `opencomputer/agents/topic-worker/` the worker: `agent.ts`; deployed as `openmuse-dev--topic-worker`
+- `opencomputer/agents/topic-worker/` the worker: `agent.ts`, `tools/kernel.ts` (Kernel MCP server for browser access); deployed as `openmuse-dev--topic-worker`
 - `scripts/templates/` `memory.ts` (the two `defineMemory` declarations) and `app-connection.ts`, copied into each agent by `scripts/prepare-agent.mjs`
 - `src/routes/api/` the owner routes, the session proxy and the one agent-facing route `agent/start-topic`
 - `src/lib/memory/` the client for the platform's memory documents (conditional create, revision checks)

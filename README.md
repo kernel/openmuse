@@ -104,8 +104,10 @@ useTool(startTopic);
 It answers directly or calls
 [start_topic](opencomputer/agents/coordinator/tools/start-topic.ts)
 to create or reuse a worker session. The
-[worker](opencomputer/agents/topic-worker/agent.ts) uses a computer for its
-task and saves useful knowledge with `memory_save`.
+[worker](opencomputer/agents/topic-worker/agent.ts) uses a computer and,
+through [Kernel](https://mcp.onkernel.com/mcp)'s hosted MCP server, a real
+Chrome for pages plain `curl` can't handle, for its task, and saves useful
+knowledge with `memory_save`.
 
 Both agents read [project memory](scripts/templates/memory.ts) through
 `useMemory`: the coordinator sees the owner profile and topic summaries;
