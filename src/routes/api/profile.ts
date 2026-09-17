@@ -2,7 +2,7 @@
 // coordinator (memory_save on its profile binding).
 import { createFileRoute } from "@tanstack/react-router";
 import { requireOwner } from "@/lib/auth/guard";
-import { PROFILE_DOCUMENT } from "@/lib/conversation/service";
+import { profileDocumentId } from "@/lib/conversation/service";
 import { failure } from "@/lib/http/json";
 import { memory } from "@/lib/memory";
 
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/api/profile")({
         const guard = await requireOwner(request);
         if (!guard.ok) return guard.response;
         try {
-          return Response.json({ document: await memory.get("profile", PROFILE_DOCUMENT) });
+          return Response.json({ document: await memory.get("profile", await profileDocumentId()) });
         } catch (error) {
           return failure(error);
         }

@@ -2,7 +2,7 @@
 // bindings, keep the event subscription that returns worker outcomes to it,
 // send owner turns, request interruption. History and live turns are read
 // by the browser through the session proxy (routes/api/sessions).
-import type { MemoryBindings } from "@opencomputer/sdk";
+import type { MemoryBindings } from "@opencomputer/sdk/agents";
 import { env } from "@/lib/env";
 import { memory } from "@/lib/memory";
 import { OcError, oc } from "@/lib/oc/client";
@@ -17,24 +17,22 @@ import {
 import { type CoordinatorRecord, readState, updateState } from "@/lib/state/store";
 import { record } from "@/lib/transcript";
 
-export const PROFILE_DOCUMENT = "owner";
-
-// The coordinator reads and saves the owner profile and browses the topics
-// collection with memory_list and memory_read; it never binds one topic.
-const COORDINATOR_MEMORY: MemoryBindings = {
-  profile: { scope: "document", id: PROFILE_DOCUMENT, access: "read-write" },
-  topics: { scope: "collection", access: "read" },
-};
+const PROFILE_DOCUMENTS = ["owner", "owner-v2"] as const;
+let resolvedProfileDocument: string | undefined;
 
 // The profile document must exist before a session binds it. Created once,
-// empty; the coordinator fills it as the owner states preferences.
-export async function ensureProfileDocument(): Promise<void> {
-  const created = await memory.create("profile", PROFILE_DOCUMENT, { title: "Owner profile" });
-  if (created.status === "deleted") {
-    throw new Error(
-      `The profile document "${PROFILE_DOCUMENT}" was deleted and its id is reserved by the platform; restore it under a new id`,
-    );
+// empty; the coordinator fills it as the owner states preferences. Deleted
+// ids stay reserved, so fall forward without moving healthy installations.
+export async function profileDocumentId(): Promise<string> {
+  if (resolvedProfileDocument) return resolvedProfileDocument;
+  for (const id of PROFILE_DOCUMENTS) {
+    const created = await memory.create("profile", id, { title: "Owner profile" });
+    if (created.status !== "deleted") {
+      resolvedProfileDocument = id;
+      return id;
+    }
   }
+  throw new Error(`The profile documents ${PROFILE_DOCUMENTS.join(", ")} were deleted and their ids are reserved`);
 }
 
 // Idempotent by installation + coordinator + deployment: the same key always
@@ -45,11 +43,15 @@ export async function coordinatorSessionId(): Promise<string> {
     await ensureOutcomeSubscription(state.coordinator);
     return state.coordinator.sessionId;
   }
-  await ensureProfileDocument();
+  const profileDocument = await profileDocumentId();
   const deploymentId = await activeDeploymentId(env().coordinatorAgent);
   const predecessor = state.coordinator?.sessionId ?? state.previousCoordinatorSessionIds?.at(-1);
   const key = `coordinator/${deploymentId}${predecessor ? `/after/${predecessor}` : ""}`;
-  const created = await createOrReuseSession(env().coordinatorAgent, key, COORDINATOR_MEMORY);
+  const memoryBindings: MemoryBindings = {
+    profile: { scope: "document", id: profileDocument, access: "read-write" },
+    topics: { scope: "collection", access: "read" },
+  };
+  const created = await createOrReuseSession(env().coordinatorAgent, key, memoryBindings);
   const coordinator = await updateState((current) => {
     const next: CoordinatorRecord = { sessionId: created.id, deploymentId };
     return { state: { ...current, coordinator: next }, result: next };

@@ -3,8 +3,8 @@
 // admission are separate idempotent operations with different keys, so a
 // retry converges without duplicate work; the document's write policy is
 // the archive state.
-import type { MemoryBindings } from "@opencomputer/sdk";
-import { PROFILE_DOCUMENT } from "@/lib/conversation/service";
+import type { MemoryBindings } from "@opencomputer/sdk/agents";
+import { profileDocumentId } from "@/lib/conversation/service";
 import { sha256Hex } from "@/lib/crypto";
 import { env } from "@/lib/env";
 import { type Document, memory, type SaveResult } from "@/lib/memory";
@@ -39,9 +39,9 @@ export type StartTopicResult =
 
 // A worker reads the owner profile and reads and saves its own topic's
 // notes; it cannot reach another topic.
-function workerMemory(topicId: string): MemoryBindings {
+async function workerMemory(topicId: string): Promise<MemoryBindings> {
   return {
-    profile: { scope: "document", id: PROFILE_DOCUMENT, access: "read" },
+    profile: { scope: "document", id: await profileDocumentId(), access: "read" },
     topics: { scope: "document", id: topicId, access: "read-write" },
   };
 }
@@ -76,7 +76,7 @@ async function ensureWorkerSession(topic: TopicRecord): Promise<string> {
   const deploymentId = await activeDeploymentId(env().workerAgent);
   const predecessor = topic.workerSessionId ?? topic.previousWorkerSessionIds.at(-1);
   const key = `topic/${topic.id}/${deploymentId}${predecessor ? `/after/${predecessor}` : ""}`;
-  const created = await createOrReuseSession(env().workerAgent, key, workerMemory(topic.id));
+  const created = await createOrReuseSession(env().workerAgent, key, await workerMemory(topic.id));
   await updateState((state) => {
     const current = state.topics[topic.id];
     if (!current || current.workerSessionId === created.id) return { state, result: undefined };
