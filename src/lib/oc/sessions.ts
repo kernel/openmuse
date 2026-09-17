@@ -1,7 +1,7 @@
 // Session lifecycle over the management API: create-or-reuse by key with
 // its memory bindings, queue a turn (resuming a suspended microVM first),
 // interrupt.
-import type { MemoryBindings } from "@opencomputer/sdk";
+import type { MemoryBindings } from "@opencomputer/sdk/agents";
 import { env } from "@/lib/env";
 import { OcError, type OcSession, oc } from "@/lib/oc/client";
 

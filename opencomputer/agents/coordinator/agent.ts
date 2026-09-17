@@ -4,10 +4,10 @@ import { startTopic } from "./tools/start-topic.js";
 
 // The model is selected here and named in the instructions; the compiler
 // reads the literal in useModel, so the two must agree.
-const MODEL = "anthropic/claude-sonnet-4.6";
+const MODEL = "anthropic/claude-sonnet-5";
 
 export default function Agent() {
-  useModel("anthropic/claude-sonnet-4.6");
+  useModel("anthropic/claude-sonnet-5");
   const input = useInput();
   // Bound at session creation (src/lib/conversation/service.ts): the owner
   // profile read-write, so memory_save is offered; the topics collection

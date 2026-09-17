@@ -3,7 +3,7 @@
 // admission are separate idempotent operations with different keys, so a
 // retry converges without duplicate work; the document's write policy is
 // the archive state.
-import type { MemoryBindings } from "@opencomputer/sdk";
+import type { MemoryBindings } from "@opencomputer/sdk/agents";
 import { PROFILE_DOCUMENT } from "@/lib/conversation/service";
 import { sha256Hex } from "@/lib/crypto";
 import { env } from "@/lib/env";

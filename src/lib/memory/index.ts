@@ -6,7 +6,7 @@
 // errors for the results a caller reconciles (a stale revision, a frozen or
 // deleted document, a field over its limit). Agent saves never come through
 // here; the platform's memory_save holds the session's own expected revision.
-import type { MemoryDocument, MemoryDocumentMeta, MemoryDocumentPage } from "@opencomputer/sdk";
+import type { MemoryDocument, MemoryDocumentMeta, MemoryDocumentPage } from "@opencomputer/sdk/agents";
 import { utf8ByteLength } from "@/lib/crypto";
 import { env } from "@/lib/env";
 

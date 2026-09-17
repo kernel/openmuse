@@ -2,7 +2,7 @@
 // bindings, keep the event subscription that returns worker outcomes to it,
 // send owner turns, request interruption. History and live turns are read
 // by the browser through the session proxy (routes/api/sessions).
-import type { MemoryBindings } from "@opencomputer/sdk";
+import type { MemoryBindings } from "@opencomputer/sdk/agents";
 import { env } from "@/lib/env";
 import { memory } from "@/lib/memory";
 import { OcError, oc } from "@/lib/oc/client";
