@@ -3,7 +3,7 @@ import { profile, topics } from "./memory.js";
 import { kernel } from "./tools/kernel.js";
 
 export default function Agent() {
-  useModel("anthropic/claude-sonnet-4.6");
+  useModel("anthropic/claude-sonnet-5");
   const input = useInput();
   // Bound at session creation (src/lib/topics/service.ts): the owner profile
   // read, this topic's document read-write, so memory_save is offered.

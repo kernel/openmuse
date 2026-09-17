@@ -7,7 +7,7 @@ import type {
   MemoryBindings,
   SessionMemoryBinding,
   TurnOutcomeDelivery,
-} from "@opencomputer/sdk";
+} from "@opencomputer/sdk/agents";
 import { env } from "@/lib/env";
 
 export interface OcEvent {
